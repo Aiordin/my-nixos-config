@@ -11,8 +11,21 @@
     ];
 
   # Bootloader.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  boot.loader.systemd-boot.configurationLimit = 5;
+
+  boot.extraModprobeConfig = ''
+    options rtw89_core disable_lps_deep=y
+    options rtw89_pci disable_aspm=y
+    options rtw89_8852be disable_ant_switch=y
+  '';
+
+#   打不上驱动时用
+#   hardware.enableAllFirmware = true;
 
   nix.gc = {
     automatic = true;
@@ -22,7 +35,16 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  boot.loader.systemd-boot.configurationLimit = 5;
+  #蓝牙
+  hardware.bluetooth = {
+    enable = true;
+    settings = {
+      General = {
+        Experimental = true;
+      };
+    };
+  };
+
 
   #boot.kernelParams = ["acpi_backlight=video"];
 
@@ -34,7 +56,11 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    dns = "dnsmasq";
+    wifi.backend = "wpa_supplicant";
+  };
 
   # Set your time zone.
   time.timeZone = "Asia/Shanghai";
@@ -82,12 +108,12 @@
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
-
-
+# 商店启用
+  services.flatpak.enable = true;
   #AMD and NVADI driver
   services.asusd.enable = true;
   services.supergfxd.enable = true;
-  services.xserver.videoDrivers = ["modesetting" "nvidia"];
+  services.xserver.videoDrivers = [/*"modesetting"*/ "nvidia"];
   hardware.nvidia = {
     modesetting.enable = true;
     nvidiaSettings = true;
@@ -105,26 +131,35 @@
   programs.gamemode.enable = true;
   security.polkit.enable = true;
 #   services.auto-cpufreq.enable = false;
-  services.power-profiles-daemon.enable = true;
+#   services.power-profiles-daemon.enable = true;
 
 #   解决华硕工具的报错
 #   systemd.tmpfiles.rules = [
 #     "d /etc/asusd 0755 root root -"
 #   ];
 
+  programs.rog-control-center.autoStart = true;
+
 
 #   appimage
   programs.appimage.enable = true;
   programs.appimage.binfmt = true;
 
+#   no nano
+  programs.nano.enable = false;
+  environment.variables = {
+    EDITOR = "vim";
+    VISUAL = "vim";
+  };
+
 
   #Sleep mode
-  services.logind = {
+  services.logind.settings.Login = {
     lidSwitchExternalPower = "ignore";
     lidSwitch = "ignore";
     suspendKey = "ignore";
     powerKey = "ignore";
-    };
+  };
 
 
   # Configure keymap in X11
@@ -182,8 +217,10 @@
   #  wget
     git
     vim
+    exfat
     nvtopPackages.full
-    supergfxctl-plasmoid
+    linux-wifi-hotspot
+    crudini
 #     tlpui
   ];
 
@@ -191,7 +228,8 @@
     "/share/plasma/plasmoids"
   ];
 
-  environment.sessionVariables.XMODIFIERS = "@im=fcitx";
+  #输入法变量
+#   environment.sessionVariables.XMODIFIERS = "@im={fcitx}";
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;

@@ -15,6 +15,13 @@
     # You can also split up your configuration and import pieces of it here:
     # ./nvim.nix
   ];
+  #锁屏设置
+  xdg.configFile."kscreenlockerrc".text = ''
+    [Daemon]
+    Autolock=true
+    LockOnResume=true
+    LockGrace=5
+  '';
 
   nixpkgs = {
     # You can add overlays here
@@ -61,5 +68,5 @@
 
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  home.stateVersion = "26.11";
+  home.stateVersion = "26.05";
 }
