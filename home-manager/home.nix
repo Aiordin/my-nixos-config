@@ -16,12 +16,12 @@
     # ./nvim.nix
   ];
   #锁屏设置
-  xdg.configFile."kscreenlockerrc".text = ''
-    [Daemon]
-    Autolock=true
-    LockOnResume=true
-    LockGrace=5
-  '';
+#   xdg.configFile."kscreenlockerrc".text = ''
+#     [Daemon]
+#     Autolock=true
+#     LockOnResume=true
+#     LockGrace=5
+#   '';
 
   nixpkgs = {
     # You can add overlays here
