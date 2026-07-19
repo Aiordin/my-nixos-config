@@ -42,6 +42,7 @@
   users.users."kid" = {
     isNormalUser = true;
     description = "kid";
+    shell = pkgs.zsh;
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
       kdePackages.kate

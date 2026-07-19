@@ -1,10 +1,17 @@
 { ... }:
 {
-  programs.bash.enable = true;
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    syntaxHighlighting.enable = true;
+    autosuggestion.enable = true;
+  };
+
 
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
+    enableZshIntegration = true;
 
     settings = {
       "$schema" = "https://starship.rs/config-schema.json";

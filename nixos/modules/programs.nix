@@ -28,4 +28,6 @@
 
   # Install Niri
   programs.niri.enable = true;
+  # Install zsh
+  programs.zsh.enable = true;
 }
