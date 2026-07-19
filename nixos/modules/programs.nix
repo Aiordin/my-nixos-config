@@ -26,4 +26,6 @@
   # Install xwayland
   programs.xwayland.enable = true;
 
+  # Install Niri
+  programs.niri.enable = true;
 }

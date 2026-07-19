@@ -13,6 +13,7 @@
       ./modules/network.nix
       ./modules/desktop.nix
       ./modules/fcitx5.nix
+      ./modules/fonts.nix
       ./modules/programs.nix
       ./modules/firewall.nix
       ./modules/apps.nix
@@ -62,8 +63,9 @@
     exfat
     nvtopPackages.full
     linux-wifi-hotspot
-    crudini
-#     tlpui
+    fuzzel
+    kitty
+    mako
   ];
 
   # List services that you want to enable:

@@ -14,6 +14,8 @@
 
     # You can also split up your configuration and import pieces of it here:
     # ./nvim.nix
+    ./modules/niri.nix
+    ./modules/starship.nix
   ];
   #锁屏设置
 #   xdg.configFile."kscreenlockerrc".text = ''
@@ -51,7 +53,7 @@
 
   # Add stuff for your user as you see fit:
   # programs.neovim.enable = true;
-  home.packages = with pkgs; [ fastfetch steam steam-run nixd ];
+  home.packages = with pkgs; [ fastfetch steam steam-run nixd eww socat jaq ];
 
   # Enable home-manager and git
   programs.home-manager.enable = true;
