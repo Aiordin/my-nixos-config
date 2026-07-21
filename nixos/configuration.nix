@@ -43,7 +43,7 @@
     isNormalUser = true;
     description = "kid";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "render" ];
     packages = with pkgs; [
       kdePackages.kate
     #  thunderbird
@@ -64,9 +64,6 @@
     exfat
     nvtopPackages.full
     linux-wifi-hotspot
-    fuzzel
-    kitty
-    mako
   ];
 
   # List services that you want to enable:

@@ -1,5 +1,7 @@
 { ... }:
 {
+  #   打不上驱动时用
+  #   hardware.enableAllFirmware = true;
   #蓝牙
   hardware.bluetooth = {
     enable = true;
@@ -12,7 +14,7 @@
   #AMD and NVADI driver
   services.asusd.enable = true;
   services.supergfxd.enable = true;
-  services.xserver.videoDrivers = [/*"modesetting"*/ "nvidia"];
+  services.xserver.videoDrivers = ["amdgpu" "nvidia"];
   hardware.nvidia = {
     modesetting.enable = true;
     nvidiaSettings = true;
@@ -38,6 +40,12 @@
 #   ];
 
   programs.rog-control-center.autoStart = true;
+
+  #  NPU driver
+    hardware.graphics = {
+      enable = true;
+      enable32Bit = true;
+  };
 
   # Power & Sleep Behavior
   services.logind.settings.Login = {

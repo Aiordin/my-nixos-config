@@ -1,12 +1,29 @@
-{ ... }:
+{ config, ... }:
 {
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
-  services.xserver.enable = true;
+#   services.xserver.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
+#   services.displayManager.sddm.enable = true;
+#   services.desktopManager.plasma6.enable = true;
+
+
+  # Install Niri
+  programs.niri.enable = true;
+
+  programs.regreet.enable = true;
+
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${config.programs.regreet.package}/bin/regreet";
+        user = "greeter";
+      };
+    };
+  };
+  systemd.user.services.niri.enableDefaultPath = false;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -33,7 +50,7 @@
     #media-session.enable = true;
   };
 
-  environment.pathsToLink = [
-    "/share/plasma/plasmoids"
-  ];
+#   environment.pathsToLink = [
+#     "/share/plasma/plasmoids"
+#   ];
 }

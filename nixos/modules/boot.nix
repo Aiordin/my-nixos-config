@@ -2,6 +2,8 @@
 {
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  #boot.initrd.kernelModules = [ "amdgpu" ];
+
   boot.loader = {
     efi.canTouchEfiVariables = true;
     systemd-boot = {
