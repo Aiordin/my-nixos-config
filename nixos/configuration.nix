@@ -16,6 +16,7 @@
       ./modules/fonts.nix
       ./modules/programs.nix
       ./modules/firewall.nix
+#       ./modules/regreet.nix
       ./modules/apps.nix
     ];
 

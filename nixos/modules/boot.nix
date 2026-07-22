@@ -18,7 +18,6 @@
     options rtw89_8852be disable_ant_switch=y
   '';
 
-#   打不上驱动时用
-#   hardware.enableAllFirmware = true;
+
 
 }

@@ -1,4 +1,4 @@
-{ config, ... }:
+{  pkgs,config, ... }:
 {
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
@@ -11,19 +11,21 @@
 
   # Install Niri
   programs.niri.enable = true;
-
-  programs.regreet.enable = true;
-
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${config.programs.regreet.package}/bin/regreet";
-        user = "greeter";
-      };
-    };
-  };
   systemd.user.services.niri.enableDefaultPath = false;
+
+    services.greetd = {
+      enable = true;
+      settings = {
+        default_session = {
+          # 💡 使用 tuigreet 并让它在登录成功后，用 niri-session 拉起你的桌面
+          # 参数含义：--time 显示时间，--asterisks 输入密码时显示星号，--remember 记住上次登录的用户名
+#           command = "''${pkgs.greetd}/bin/agreety --cmd niri";
+          command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd niri";
+          user = "greeter";
+        };
+      };
+  };
+
 
   # Configure keymap in X11
   services.xserver.xkb = {
