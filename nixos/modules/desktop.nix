@@ -20,7 +20,7 @@
           # 💡 使用 tuigreet 并让它在登录成功后，用 niri-session 拉起你的桌面
           # 参数含义：--time 显示时间，--asterisks 输入密码时显示星号，--remember 记住上次登录的用户名
 #           command = "''${pkgs.greetd}/bin/agreety --cmd niri";
-          command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd niri";
+          command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd ${config.programs.niri.package}/bin/niri-session";
           user = "greeter";
         };
       };

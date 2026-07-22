@@ -19,7 +19,10 @@
     ./modules/waybar.nix
     ./modules/swayidle.nix
     ./modules/programs.nix
+    ./modules/ai/codewhale.nix
   ];
+
+
   #锁屏设置
 #   xdg.configFile."kscreenlockerrc".text = ''
 #     [Daemon]

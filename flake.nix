@@ -8,12 +8,15 @@
     # Home manager
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    # CodeWhale
+    codewhale.url = "github:Hmbown/CodeWhale";
   };
 
   outputs = {
 #     self,
     nixpkgs,
     home-manager,
+#     codewhale
     ...
   } @ inputs: let
     system = "x86_64-linux";

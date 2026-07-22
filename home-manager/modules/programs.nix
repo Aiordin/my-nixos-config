@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs,  ... }:
 {
 
   # Add stuff for your user as you see fit:
@@ -12,8 +12,18 @@
   services.swayidle.enable = true; # idle management daemon
   services.polkit-gnome.enable = true; # polkit
 
+  programs.git = {
+    enable = true;
+    settings = {
+      credential.helper = "cache --timeout=2592000";
+    };
+  };
+
+
 
   home.packages = with pkgs; [
+#     inputs.codewhale.packages.${pkgs.system}.codewhale
+
     xwayland-satellite
     swaybg # wallpaper
     fastfetch
@@ -23,5 +33,6 @@
     eww
     socat
     jaq
+    tree
   ];
 }
