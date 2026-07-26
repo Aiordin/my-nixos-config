@@ -19,7 +19,7 @@
     ./modules/waybar.nix
     ./modules/swayidle.nix
     ./modules/programs.nix
-#     ./modules/ai/codewhale.nix
+    ./modules/ai/codewhale.nix
     ./modules/vscode.nix
   ];
 
