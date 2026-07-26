@@ -17,6 +17,7 @@
       ./modules/programs.nix
       ./modules/firewall.nix
 #       ./modules/regreet.nix
+      ./modules/docker.nix
       ./modules/apps.nix
     ];
 
@@ -44,7 +45,7 @@
     isNormalUser = true;
     description = "kid";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" "video" "render" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "render" "docker" ];
     packages = with pkgs; [
       kdePackages.kate
     #  thunderbird

@@ -23,7 +23,8 @@
 
   home.packages = with pkgs; [
 #     inputs.codewhale.packages.${pkgs.system}.codewhale
-
+    inputs.codewhale.packages.${pkgs.system}.default
+    nixfmt-rfc-style
     xwayland-satellite
     swaybg # wallpaper
     fastfetch
