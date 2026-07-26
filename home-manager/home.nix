@@ -20,6 +20,7 @@
     ./modules/swayidle.nix
     ./modules/programs.nix
     ./modules/ai/codewhale.nix
+    ./modules/vscode.nix
   ];
 
 

@@ -8,15 +8,13 @@
     # Home manager
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    # CodeWhale
-    codewhale.url = "github:Hmbown/CodeWhale";
+
   };
 
   outputs = {
 #     self,
     nixpkgs,
     home-manager,
-#     codewhale
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -39,8 +37,10 @@
       # FIXME replace with your username@hostname
       "kid@nixos" = home-manager.lib.homeManagerConfiguration {
         # Home-manager requires 'pkgs' instance
-        pkgs = nixpkgs.legacyPackages.x86_64-linux; # FIXME replace x86_64-linux with your architecture 
-        extraSpecialArgs = {inherit inputs;};
+        pkgs = nixpkgs.legacyPackages.x86_64-linux; # FIXME replace x86_64-linux with your architecture
+        extraSpecialArgs = {
+          inherit inputs;
+        };
         # > Our main home-manager configuration file <
         modules = [./home-manager/home.nix];
       };

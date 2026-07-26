@@ -1,4 +1,4 @@
-{ pkgs,  ... }:
+{ pkgs, inputs,  ... }:
 {
 
   # Add stuff for your user as you see fit:
@@ -22,8 +22,7 @@
 
 
   home.packages = with pkgs; [
-#     inputs.codewhale.packages.${pkgs.system}.codewhale
-
+    nixfmt-rfc-style
     xwayland-satellite
     swaybg # wallpaper
     fastfetch
