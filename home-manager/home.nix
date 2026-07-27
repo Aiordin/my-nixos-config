@@ -1,19 +1,14 @@
 # This is your home-manager configuration file
 # Use this to configure your home environment (it replaces ~/.config/nixpkgs/home.nix)
 {
-#   inputs,
-#   lib,
-#   config,
-#   pkgs,
+  inputs,
   ...
-}: {
+}:
+{
   # You can import other home-manager modules here
   imports = [
-    # If you want to use home-manager modules from other flakes (such as nix-colors):
-    # inputs.nix-colors.homeManagerModule
-
-    # You can also split up your configuration and import pieces of it here:
-    # ./nvim.nix
+    inputs.nixvim.homeModules.nixvim
+    ./modules/nixvim.nix
     ./modules/niri/niri.nix
     ./modules/starship.nix
     ./modules/waybar.nix
@@ -23,14 +18,13 @@
     ./modules/vscode.nix
   ];
 
-
   #锁屏设置
-#   xdg.configFile."kscreenlockerrc".text = ''
-#     [Daemon]
-#     Autolock=true
-#     LockOnResume=true
-#     LockGrace=5
-#   '';
+  #   xdg.configFile."kscreenlockerrc".text = ''
+  #     [Daemon]
+  #     Autolock=true
+  #     LockOnResume=true
+  #     LockGrace=5
+  #   '';
 
   nixpkgs = {
     # You can add overlays here
@@ -69,8 +63,6 @@
       };
     };
   };
-
-
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "26.05";

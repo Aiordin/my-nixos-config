@@ -22,7 +22,7 @@
 
 
   home.packages = with pkgs; [
-    nixfmt-rfc-style
+    nixfmt
     xwayland-satellite
     swaybg # wallpaper
     fastfetch
