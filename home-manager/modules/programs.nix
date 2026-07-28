@@ -14,8 +14,11 @@
 
   programs.git = {
     enable = true;
+    # gitFull includes git-credential-libsecret for gnome-keyring integration
+    package = pkgs.gitFull;
     settings = {
-      credential.helper = "cache --timeout=2592000";
+      # Store credentials in gnome-keyring via libsecret Secret Service API
+      credential.helper = "libsecret";
     };
   };
 

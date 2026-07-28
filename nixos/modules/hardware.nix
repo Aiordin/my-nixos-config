@@ -29,8 +29,6 @@
 #       nvidiaBusId = "PCI:6:0:0";
 #     };
   };
-  programs.gamemode.enable = true;
-  security.polkit.enable = true;
 #   services.auto-cpufreq.enable = false;
 #   services.power-profiles-daemon.enable = true;
 

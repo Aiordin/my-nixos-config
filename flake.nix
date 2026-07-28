@@ -12,6 +12,9 @@
     # Nixvim — declarative Neovim config
     nixvim.url = "github:nix-community/nixvim";
 
+    # nix-flatpak — declarative Flatpak management with overrides support
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
+
   };
 
   outputs =
@@ -43,7 +46,12 @@
         # FIXME replace with your username@hostname
         "kid@nixos" = home-manager.lib.homeManagerConfiguration {
           # Home-manager requires 'pkgs' instance
-          pkgs = nixpkgs.legacyPackages.x86_64-linux; # FIXME replace x86_64-linux with your architecture
+          # Import nixpkgs with allowUnfree so standalone home-manager
+          # can install packages like Steam without env vars.
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
           extraSpecialArgs = {
             inherit inputs;
           };
