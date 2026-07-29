@@ -194,7 +194,6 @@
         -- 文件 / 搜索
         { "<leader>f", group = "󰍉 查找 (Telescope)" },
         { "<leader>/", desc = "󰍉 当前文件内搜索" },
-        { "<leader>e", desc = "󰈔 文件树" },
         { "<leader>w", desc = "󰆓 保存" },
 
         -- Git（子键 gg/gb/gd 由各自的 desc 自动发现）

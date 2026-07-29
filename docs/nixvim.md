@@ -1,6 +1,6 @@
 # Nixvim 配置说明
 
-本配置使用 [nixvim](https://github.com/nix-community/nixvim) 模块，通过 Nix 语法声明式管理 Neovim 的插件、主题、快捷键和 LSP 设置，避免手写 Lua 配置。配置文件位于 `home-manager/modules/nixvim.nix`。
+本配置使用 [nixvim](https://github.com/nix-community/nixvim) 模块，通过 Nix 语法声明式管理 Neovim 的插件、主题、快捷键和 LSP 设置，避免手写 Lua 配置。配置文件位于 `home-manager/modules/nixvim/`（模块化目录）。
 
 ## 构建与生效
 
