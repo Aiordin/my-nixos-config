@@ -1,26 +1,29 @@
-                       # Edit this configuration file to define what should be installed on
+# Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ /*config,*/ pkgs, ... }:
-
+# config,
+{ inputs, pkgs, ... }:
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./modules/boot.nix
-      ./modules/hardware.nix
-      ./modules/network.nix
-      ./modules/desktop.nix
-      ./modules/fcitx5.nix
-      ./modules/fonts.nix
-      ./modules/programs.nix
-      ./modules/firewall.nix
-#       ./modules/regreet.nix
-      ./modules/docker.nix
-      ./modules/apps.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ./modules/boot.nix
+    ./modules/hardware.nix
+    ./modules/network.nix
+    ./modules/desktop.nix
+    ./modules/fcitx5.nix
+    ./modules/fonts.nix
+    ./modules/programs.nix
+    ./modules/firewall.nix
+    #       ./modules/regreet.nix
+    ./modules/docker.nix
+    ./modules/apps.nix
+    ./modules/flatpak.nix
 
+    # nix-flatpak module for declarative Flatpak override management
+    inputs.nix-flatpak.nixosModules.nix-flatpak
+  ];
 
   nix.gc = {
     automatic = true;
@@ -28,14 +31,13 @@
     options = "--delete-generations old";
   };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # Set your time zone.
   time.timeZone = "Asia/Shanghai";
-
-
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -45,10 +47,16 @@
     isNormalUser = true;
     description = "kid";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" "video" "render" "docker" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "video"
+      "render"
+      "docker"
+    ];
     packages = with pkgs; [
       kdePackages.kate
-    #  thunderbird
+      #  thunderbird
       qt6Packages.fcitx5-configtool
     ];
   };
@@ -59,9 +67,9 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
-#     git
+    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    #  wget
+    #     git
     vim
     exfat
     nvtopPackages.full

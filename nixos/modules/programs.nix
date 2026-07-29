@@ -30,4 +30,6 @@
   programs.zsh.enable = true;
 
   services.gnome.gnome-keyring.enable = true; # secret service
+  programs.gamemode.enable = true;
+  security.polkit.enable = true;
 }
