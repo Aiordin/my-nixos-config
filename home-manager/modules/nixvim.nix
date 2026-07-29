@@ -93,7 +93,7 @@
       enable = true;
       settings = {
         options = {
-          theme = "catppuccin";
+          theme = "auto";  # auto-detect catppuccin via integration
           globalstatus = true;
           component_separators = {
             left = "│";
@@ -504,12 +504,6 @@
       }
       {
         mode = "n";
-        key = "<leader>q";
-        action = "<cmd>q<CR>";
-        options.desc = "退出";
-      }
-      {
-        mode = "n";
         key = "<Esc>";
         action = "<cmd>nohlsearch<CR>";
         options.desc = "清除高亮";
@@ -644,50 +638,75 @@
       vim.api.nvim_set_hl(0, "TermSepLine", { fg = "#1e1e2e", bg = "#1e1e2e" })
 
       -- ============================================================
-      -- 底部终端 (编辑区对齐)
+      -- 底部终端 (使用 toggleterm)
       -- ============================================================
-      local _term_win = nil
-      local _term_buf = nil
+      local Terminal = require("toggleterm.terminal").Terminal
 
-      local function _term_toggle()
-        if _term_win and vim.api.nvim_win_is_valid(_term_win) then
-          pcall(vim.api.nvim_win_close, _term_win, true)
-          _term_win = nil
-          return
+      local function _term_on_open(term)
+        vim.bo[term.bufnr].buflisted = true
+        local win = term.window
+        if win and vim.api.nvim_win_is_valid(win) then
+          vim.wo[win].number = false
+          vim.wo[win].relativenumber = false
+          vim.wo[win].signcolumn = "no"
+          vim.wo[win].cursorline = false
+          vim.wo[win].winhighlight = "WinSeparator:TermSepLine"
+          vim.wo[win].winbar = "%#TermSepBar#  终端 %="
         end
-        -- 创建或复用终端缓冲区
-        if not _term_buf or not vim.api.nvim_buf_is_valid(_term_buf) then
-          _term_buf = vim.api.nvim_create_buf(false, false)
-          vim.bo[_term_buf].buflisted = false
-          vim.bo[_term_buf].filetype = "fterm"
-          vim.api.nvim_buf_call(_term_buf, function()
-            vim.fn.termopen(vim.o.shell)
-          end)
-          vim.api.nvim_create_autocmd("BufWipeout", {
-            buffer = _term_buf,
-            once = true,
-            callback = function()
-              _term_buf = nil
-              _term_win = nil
-            end,
-          })
-        end
-        vim.cmd("below 15split")
-        _term_win = vim.api.nvim_get_current_win()
-        vim.wo[_term_win].number = false
-        vim.wo[_term_win].relativenumber = false
-        vim.wo[_term_win].signcolumn = "no"
-        vim.wo[_term_win].cursorline = false
-        -- 隐藏默认分割线，以 winbar 作为唯一分隔
-        vim.wo[_term_win].winhighlight = "WinSeparator:TermSepLine"
-        vim.api.nvim_win_set_buf(_term_win, _term_buf)
-        vim.cmd("startinsert")
-        -- winbar 在 startinsert 之后设置，避免被覆盖
-        vim.wo[_term_win].winbar = "%#TermSepBar#  终端 %="
       end
 
-      vim.keymap.set("n", "<leader>tt", _term_toggle, { desc = "终端" })
-      vim.keymap.set("t", "<leader>tt", _term_toggle, { desc = "关闭终端" })
+      local _default_term = Terminal:new({
+        direction = "horizontal",
+        close_on_exit = true,
+        on_open = _term_on_open,
+      })
+
+      vim.keymap.set("n", "<leader>tt", function() _default_term:toggle() end, { desc = "切换终端" })
+      vim.keymap.set("t", "<leader>tt", "<cmd>ToggleTerm<CR>", { desc = "关闭终端" })
+
+      vim.keymap.set("n", "<leader>tn", function()
+        local new_term = Terminal:new({
+          direction = "horizontal",
+          close_on_exit = true,
+          on_open = _term_on_open,
+        })
+        new_term:open()
+      end, { desc = "新终端" })
+
+      -- 关闭当前分窗：只剩最后一个窗口时不关闭，提示用 <leader>Q 退出
+      vim.keymap.set("n", "<leader>q", function()
+        -- 只统计非浮动窗口，避免浮动弹窗干扰计数导致 :close 报 E444
+        local win_count = 0
+        for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+          if vim.api.nvim_win_get_config(win).relative == "" then
+            win_count = win_count + 1
+          end
+        end
+        if win_count <= 1 then
+          vim.notify("已是最后一个窗口，使用 <leader>Q 退出编辑器", vim.log.levels.WARN, { title = "⚠ 提示" })
+        else
+          vim.cmd("close")
+        end
+      end, { desc = "关闭分窗" })
+
+      -- 退出确认：按两次 <leader>Q 才真正退出
+      local _quit_confirm = false
+      local _quit_timer = nil
+
+      vim.keymap.set("n", "<leader>Q", function()
+        if _quit_confirm then
+          vim.cmd("qa!")
+          return
+        end
+        _quit_confirm = true
+        vim.notify("再按一次 <leader>Q 确认退出", vim.log.levels.WARN, { title = "⚠ 退出确认" })
+        if _quit_timer then
+          pcall(_quit_timer.close, _quit_timer)
+        end
+        _quit_timer = vim.defer_fn(function()
+          _quit_confirm = false
+        end, 3000)
+      end, { desc = "退出编辑器" })
 
       -- 文件树智能切换：在文件树中按 <leader>e 关闭，否则聚焦文件树
       vim.keymap.set("n", "<leader>e", function()
@@ -783,9 +802,12 @@
           { "<leader>b", group = "󰓩 缓冲区" },
           { "<leader>t", group = " 终端" },
           { "<leader>tt", desc = "切换终端" },
+          { "<leader>tn", desc = "新终端" },
           { "<leader>c", group = " 代码 (LSP/Format)" },
           { "<leader>s", group = "󰩬 窗格" },
           { "<leader>d", group = " 诊断" },
+          { "<leader>q", desc = "关闭分窗" },
+          { "<leader>Q", desc = "退出编辑器" },
         })
       end
     '';
