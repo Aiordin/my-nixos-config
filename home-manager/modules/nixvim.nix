@@ -113,7 +113,10 @@
     plugins.bufferline = {
       enable = true;
       settings.options = {
-        offsets = [ { filetype = "neo-tree"; } ];
+        offsets = [
+          { filetype = "neo-tree"; }
+          { filetype = "DiffviewFiles"; }
+        ];
         separator_style = "thin";
         close_command = "buffer %d | Bclose";
         right_mouse_command = "buffer %d | Bclose";
@@ -605,8 +608,19 @@
       {
         mode = "n";
         key = "<leader>gd";
-        action = "<cmd>DiffviewOpen<CR>";
-        options.desc = "Diff";
+        action.__raw = ''
+          function()
+            -- 检测 diffview 是否已打开：查找 DiffviewFiles 类型的 buffer
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+              if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == "DiffviewFiles" then
+                vim.cmd("DiffviewClose")
+                return
+              end
+            end
+            vim.cmd("DiffviewOpen")
+          end
+        '';
+        options.desc = "切换 Diff";
       }
 
       # ---- 格式化 ----
@@ -789,6 +803,21 @@
         group = vim.api.nvim_create_augroup("YankHighlight", { clear = true }),
       })
 
+      -- 在 diffview 文件面板中禁用 <leader>b 和 <leader>e：
+      -- diffview 注册了 buffer-local 的 <leader>b（打开分屏）和 <leader>e（toggle files），
+      -- 会遮蔽同名的全局 keymap。直接通过 setup() 禁止创建，而非事后覆盖。
+      local dv_ok, dv = pcall(require, "diffview")
+      if dv_ok then
+        dv.setup({
+          keymaps = {
+            file_panel = {
+              ["<leader>b"] = false,
+              ["<leader>e"] = false,
+            },
+          },
+        })
+      end
+
       -- 保存时自动删除尾随空白（除 Markdown）
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = "*",
@@ -802,21 +831,35 @@
       })
 
       -- which-key 分组标题：按 <Space> 即可看到清晰的分类
+      -- 分组会自动发现其下所有带 desc 的 keymap；显式 desc 项仅用于无前缀的顶层快捷键。
       local wk_ok, wk = pcall(require, "which-key")
       if wk_ok then
         wk.add({
-          { "<leader>f", group = "󰍉 查找文件 (Telescope)" },
+          -- 文件 / 搜索
+          { "<leader>f", group = "󰍉 查找 (Telescope)" },
           { "<leader>/", desc = "󰍉 当前文件内搜索" },
+          { "<leader>e", desc = "󰈔 文件树" },
+          { "<leader>w", desc = "󰆓 保存" },
+
+          -- Git（子键 gg/gb/gd 由各自的 desc 自动发现）
           { "<leader>g", group = "󰊢 Git" },
-          { "<leader>b", group = "󰓩 缓冲区" },
-          { "<leader>t", group = " 终端" },
-          { "<leader>tt", desc = "切换终端" },
-          { "<leader>tn", desc = "新终端" },
+
+          -- 代码：LSP 操作 + 格式化（子键 ca/cl/cf 自动发现）
           { "<leader>c", group = " 代码 (LSP/Format)" },
+
+          -- 窗格
           { "<leader>s", group = "󰩬 窗格" },
+
+          -- 诊断（子键 df 自动发现）
           { "<leader>d", group = " 诊断" },
-          { "<leader>q", desc = "关闭分窗" },
-          { "<leader>Q", desc = "退出编辑器" },
+
+          -- 终端（子键 tt/tn 自动发现）
+          { "<leader>t", group = " 终端" },
+
+          -- 窗口 / 退出
+          { "<leader>x", desc = "󰅖 关闭缓冲区" },
+          { "<leader>q", desc = "󰅖 关闭分窗" },
+          { "<leader>Q", desc = "󰈆 退出编辑器" },
         })
       end
     '';

@@ -84,7 +84,7 @@ LSP 快捷键（仅在 LSP 附着的缓冲区生效）：
 | `<leader>cl` | Code Lens 操作 |
 | `[d` | 上一个诊断 |
 | `]d` | 下一个诊断 |
-| `<leader>e` | 诊断详情浮窗 |
+| `<leader>df` | 诊断详情浮窗 |
 
 内联提示（inlay hints）默认开启。
 
@@ -122,13 +122,125 @@ LSP 快捷键（仅在 LSP 附着的缓冲区生效）：
 - `:FormatEnable` — 重新启用
 - `<leader>cf` — 手动格式化当前文件
 
-### Git 集成
+### Git — Diff 工具链
 
-- `<leader>gg` — 打开 Neogit（类 Magit 的 Git 状态面板）
-- `<leader>gb` — 显示当前行的 Git Blame
-- `<leader>gd` — 打开 Diffview（差异对比视图）
+本配置集成了三层 Git 工具，覆盖"代码变更感知 → 差异审查 → 暂存提交"的完整工作流：
 
-Gitsigns 在行号左侧显示增删改标记，并启用当前行 Blame。
+- **gitsigns**：行内变更标记 + hunk 级操作（快速查看和回退单段修改）
+- **diffview**：分支 / 提交级差异对比（审查整个 PR 或跨分支差异）
+- **neogit**：类 Magit 的交互式 Git 界面（暂存、提交、日志、分支操作）
+
+三者互补：gitsigns 负责微观（行级），diffview 负责宏观（分支级），neogit 负责事务（提交）。
+
+#### gitsigns — 行内变更标记
+
+gitsigns 在符号列显示当前文件的 Git 变更状态（添加 / 修改 / 删除），同时提供 hunk（修改块）级别的操作快捷键。启用后自动在符号列显示变更标记，并在当前行末尾显示 Git Blame 信息。
+
+**gitsigns 快捷键**（这些是插件内置默认键，无需手动配置）：
+
+| 快捷键 | 功能 |
+|--------|------|
+| `]c` | 跳转到下一个 hunk |
+| `[c` | 跳转到上一个 hunk |
+| `<leader>hs` | 暂存当前 hunk（stage） |
+| `<leader>hr` | 回退当前 hunk（reset） |
+| `<leader>hR` | 回退整个缓冲区的所有变更 |
+| `<leader>hp` | 预览当前 hunk 的完整差异 |
+| `<leader>hb` | 显示当前行的 Git Blame（浮动窗口） |
+| `<leader>hd` | 对光标所在的单词执行 `git diff` |
+| `<leader>hD` | 对光标所在行执行 `git diff` |
+| `<leader>tb` | 切换当前行 Blame 的显示/隐藏 |
+| `ih` | 选中当前 hunk（文本对象，配合 `d`/`y` 等操作符） |
+
+**Blame 浮窗**：`<leader>gb` 打开当前行 Blame 浮窗（由自定义 keymap 绑定到 `Gitsigns blame_line`），显示提交 hash、作者、时间，按 `q` 关闭。
+
+#### diffview — 分支 / 提交差异审查
+
+diffview 提供专用的差异对比视图，适合审查较大范围的变更——例如对比两个分支、查看某个提交改了什么、或查看暂存区与 HEAD 的差异。
+
+| 快捷键 | 功能 |
+|--------|------|
+| `<leader>gd` | 切换 Diffview（打开/关闭：已打开时关闭，未打开时对比工作区与 HEAD） |
+| `:DiffviewOpen <branch>` | 对比当前分支与指定分支 |
+| `:DiffviewOpen HEAD~1` | 查看最近一次提交的变更 |
+| `:DiffviewOpen <commit1>..<commit2>` | 对比两个提交之间的差异 |
+| `:DiffviewClose` | 关闭差异视图 |
+| `:DiffviewFileHistory` | 查看当前文件的历史变更 |
+| `:DiffviewFileHistory %` | 查看当前文件的提交历史（`%` 代表当前文件路径） |
+| `:DiffviewToggleFiles` | 在文件面板中切换显示已变更/所有文件 |
+
+**Diffview 窗口内常用操作**：
+
+| 快捷键 | 功能 |
+|--------|------|
+| `q` | 关闭 Diffview |
+| `<Tab>` | 在文件列表和差异视图之间切换焦点 |
+| `<CR>` | 打开光标下的文件差异 |
+| `o` | 在水平分割窗口中打开文件 |
+| `?` | 显示键盘映射帮助 |
+
+Diffview 窗口顶部会显示对比的两个引用（如 `HEAD` vs `working tree`），底部是文件列表，右侧是差异详情。在文件列表中按 `<Tab>` 切换到差异面板后，可以用 `]c` / `[c` 在 hunks 之间跳转。
+
+#### neogit — 交互式 Git 面板
+
+Neogit 提供一个全屏的交互式 Git 界面，灵感来自 Emacs 的 Magit。打开后可以用键盘完成暂存、提交、推送、分支切换、rebase 等操作。
+
+| 快捷键 / 操作 | 功能 |
+|---------------|------|
+| `<leader>gg` | 打开 Neogit 状态面板 |
+| `q` | 关闭 Neogit |
+| `s` | 暂存光标下的文件或 hunk（stage） |
+| `S` | 暂存所有文件 |
+| `u` | 取消暂存（unstage） |
+| `c` | 打开提交窗口 |
+| `p` | 推送到远程仓库（push） |
+| `P` | 拉取（pull） |
+| `F` | 强制推送（force push，慎用） |
+| `l` | 查看日志（log） |
+| `b` | 分支操作弹窗（新建/切换/删除分支） |
+| `M` | 合并分支 |
+| `r` | Rebase 操作 |
+| `z` | 隐藏/取消隐藏（stash） |
+| `Z` | 暂存并打开 stash 面板 |
+| `X` | 重置（reset）操作 |
+| `v` | 在差异面板中选择行 |
+| `?` | 显示帮助面板 |
+
+Neogit 主面板分为三块：**暫存区** (Staged)、**未暫存区** (Unstaged) 和**未跟踪文件** (Untracked)。在任意文件上按 `<Tab>` 可以展开/折叠该文件的 hunk 列表，按 `s` 暂存整个文件，或在展开后按 `s` 暂存单个 hunk。
+
+#### 典型 Diff 工作流
+
+**场景一：提交前自审**
+
+1. `<leader>gd` 打开 Diffview，确认所有变更是预期的还是需要拆分的
+2. 逐文件检查，在 Diffview 中用 `]c` / `[c` 跳转 hunk
+3. `<leader>gg` 进入 Neogit，按 `s` 逐文件（或逐 hunk）暂存
+4. 按 `c` 提交，输入 commit message 后 `:wq` 保存
+5. 按 `p` 推送
+
+**场景二：审查 PR 分支差异**
+
+```
+:DiffviewOpen main
+```
+
+当前分支 vs `main` 的所有差异一览无余。在文件列表中移动，`<CR>` 查看具体差异。
+
+**场景三：快速回退误操作**
+
+在编辑区中看到某个 hunk 改错了 → `<leader>hr` 回退该 hunk（gitsigns 的 reset_hunk）。如果整文件都需要回退 → `<leader>hR`。
+
+**场景四：追踪单行历史**
+
+`<leader>gb` 查看当前行 Blame → 找到引入者 commit hash → `<leader>gd` 打开 Diffview → `:DiffviewOpen <hash>^..<hash>` 查看那个 commit 改了什么。
+
+**场景五：查看某文件的历史**
+
+```
+:DiffviewFileHistory %
+```
+
+会在 Diffview 中显示该文件的每次提交差异，方便追溯某个 bug 是在哪一次提交引入的。
 
 ### 终端
 
@@ -151,7 +263,7 @@ Gitsigns 在行号左侧显示增删改标记，并启用当前行 Blame。
 ### UI 增强
 
 - **lualine** — 全局底部状态栏（`globalstatus=true`），Catppuccin 主题，始终显示不随窗口变化
-- **bufferline** — 顶部标签栏，缩略分隔符样式，终端 buffer 自动排除
+- **bufferline** — 顶部标签栏，缩略分隔符样式
 - **which-key** — 按键后 400ms 弹出快捷键提示（modern 预设）
 - **noice** — 命令行美化 + LSP 文档边框 + 长消息自动分割
 - **alpha** — 启动页（dashboard 主题），显示 ASCII 艺术和快捷入口
