@@ -673,19 +673,28 @@
         new_term:open()
       end, { desc = "新终端" })
 
-      -- 关闭当前分窗：只剩最后一个窗口时不关闭，提示用 <leader>Q 退出
+      -- 关闭当前分窗（仅关窗口，不退出编辑器）
+      -- 排除 neo-tree / toggleterm 等插件窗口，只统计真正的编辑窗口。
+      -- 原因：neo-tree 配置了 close_if_last_window，如果只计非浮动窗口总数，
+      -- 会出现"编辑区 + neo-tree = 2 窗口 → :close 关掉编辑区 → neo-tree
+      -- 检测到自己是最后窗口也自动关闭 → 0 窗口退出"的链式关闭问题。
       vim.keymap.set("n", "<leader>q", function()
-        -- 只统计非浮动窗口，避免浮动弹窗干扰计数导致 :close 报 E444
-        local win_count = 0
+        local real_wins = 0
         for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-          if vim.api.nvim_win_get_config(win).relative == "" then
-            win_count = win_count + 1
+          local cfg = vim.api.nvim_win_get_config(win)
+          if cfg.relative == "" then
+            local buf = vim.api.nvim_win_get_buf(win)
+            local ft = vim.bo[buf].filetype
+            -- 只统计普通编辑窗口，排除插件专用的 UI 窗口
+            if ft ~= "neo-tree" and ft ~= "toggleterm" then
+              real_wins = real_wins + 1
+            end
           end
         end
-        if win_count <= 1 then
+        if real_wins <= 1 then
           vim.notify("已是最后一个窗口，使用 <leader>Q 退出编辑器", vim.log.levels.WARN, { title = "⚠ 提示" })
         else
-          vim.cmd("close")
+          pcall(vim.cmd, "close")
         end
       end, { desc = "关闭分窗" })
 
