@@ -270,7 +270,17 @@ layout {
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "waybar"
 
-// To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
+// Steam 壁纸引擎 (linux-wallpaperengine)
+// 从 Steam 创意工坊订阅的壁纸中加载，订阅后在以下路径找到壁纸 ID：
+//   ~/.steam/steam/steamapps/workshop/content/431960/<wallpaper-id>
+// 用法：将 <wallpaper-id> 替换为你订阅的壁纸 ID（纯数字文件夹名）
+// 也可以使用 scene.pkg 文件路径直接加载本地壁纸
+spawn-sh-at-startup "sleep 1 && linux-wallpaperengine --assets-dir /mnt/data/SteamLibrary/steamapps/common/wallpaper_engine/assets --silent --screen-root eDP-1 --fps 30 2330931498"
+
+// Eww 桌面小组件（时钟、系统监控、音乐、日历等）
+spawn-at-startup "eww daemon"
+spawn-sh-at-startup "sleep 1 && eww open-many calendar uptime clock battery-volume music-player system-monitor"
+
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
 hotkey-overlay {
@@ -339,11 +349,40 @@ window-rule {
     // block-out-from "screencast"
 }
 
-// Example: enable rounded corners for all windows.
-// (This example rule is commented out with a "/-" in front.)
-/-window-rule {
+// Wynn-Dots: 全局圆角 + 裁剪（美观统一）
+window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
+}
+
+// Wynn-Dots: waybar 层规则 — 模糊背景 + 圆角
+layer-rule {
+    match namespace="waybar"
+    match at-startup=true
+    match layer="top"
+
+    opacity 0.9
+    geometry-corner-radius 12
+    place-within-backdrop true
+
+    background-effect {
+        blur true
+        noise 0.05
+        saturation 3
+    }
+}
+
+// Wynn-Dots: gtk-layer-shell 桌面组件层规则
+layer-rule {
+    match namespace="gtk-layer-shell"
+    match at-startup=true
+    match layer="bottom"
+    geometry-corner-radius 12
+    opacity 0.9
+    background-effect {
+        blur true
+        noise 0.05
+    }
 }
 
 binds {

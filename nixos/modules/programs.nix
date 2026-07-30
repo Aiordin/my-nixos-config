@@ -32,4 +32,12 @@
   services.gnome.gnome-keyring.enable = true; # secret service
   programs.gamemode.enable = true;
   security.polkit.enable = true;
+
+  # Install steam
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+  };
+
 }

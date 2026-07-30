@@ -93,7 +93,12 @@
           format-wifi = "{icon} {signalStrength}%";
           format-ethernet = "󰈀 有线";
           format-disconnected = "󰤮";
-          format-icons = [ "󰤯" "󰤟" "󰤢" "󰤥" ];
+          format-icons = [
+            "󰤯"
+            "󰤟"
+            "󰤢"
+            "󰤥"
+          ];
           tooltip-format = ''
             {ifname}: {ipaddr}/{cidr}
             ▲ {bandwidthUpBits}  ▼ {bandwidthDownBits}
@@ -133,7 +138,11 @@
           format = "{icon} {volume}%";
           format-muted = "󰝟 静音";
           format-icons = {
-            default = [ "󰕿" "󰖀" "󰕾" ];
+            default = [
+              "󰕿"
+              "󰖀"
+              "󰕾"
+            ];
           };
           tooltip-format = "{desc} — {volume}%\n左键静音  右键混音器  滚轮±5%";
           on-click = "pactl set-sink-mute @DEFAULT_SINK@ toggle";
@@ -161,7 +170,11 @@
         backlight = {
           device = "nvidia_0";
           format = "{icon}  {percent}%";
-          format-icons = [ "󰃞" "󰃟" "󰃠" ];
+          format-icons = [
+            "󰃞"
+            "󰃟"
+            "󰃠"
+          ];
           on-scroll-up = "brightnessctl set +5%";
           on-scroll-down = "brightnessctl set 5%-";
           tooltip-format = "屏幕亮度  {percent}%\n滚轮 ±5%";
@@ -242,8 +255,16 @@
         battery = {
           format = "{icon} {capacity}%";
           format-icons = [
-            "󰁺" "󰁻" "󰁼" "󰁽" "󰁾"
-            "󰁿" "󰂀" "󰂁" "󰂂" "󰁹"
+            "󰁺"
+            "󰁻"
+            "󰁼"
+            "󰁽"
+            "󰁾"
+            "󰁿"
+            "󰂀"
+            "󰂁"
+            "󰂂"
+            "󰁹"
           ];
           format-charging = "󰂄 {capacity}%";
           format-plugged = "󰚥 {capacity}%";
@@ -293,14 +314,27 @@
         # 时钟 — 左键切换显示，右键日历
         # ============================================================
         clock = {
-          format = "{:%H:%M}";
-          format-alt = "{:%m-%d %H:%M}";
-          tooltip-format = ''
-            <big><b>{:%Y-%m-%d}</b></big>
-            <tt>{calendar}</tt>
-            左键切换  右键打开日历'';
-          on-click = "mode";
-          on-click-right = "kitty -e sh -c 'cal -3; read -p \"按回车关闭...\"'";
+          format = "󰅐  {:%I:%M %p}";
+          format-alt = "󰃶  {:%A, %B %d}";
+          tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+          calendar = {
+            mode = "year";
+            mode-mon-col = 3;
+            weeks-pos = "right";
+            on-scroll = 1;
+            format = {
+              months = "<span color='#cba6f7'><b>{}</b></span>";
+              days = "<span color='#cdd6f4'>{}</span>";
+              weeks = "<span color='#94e2d5'><b>W{}</b></span>";
+              weekdays = "<span color='#f9e2af'><b>{}</b></span>";
+              today = "<span color='#f38ba8'><b><u>{}</u></b></span>";
+            };
+          };
+          actions = {
+            on-click-right = "mode";
+            on-scroll-up = "shift_up";
+            on-scroll-down = "shift_down";
+          };
         };
 
         # ============================================================
@@ -336,240 +370,7 @@
       };
     };
 
-    # ============================================================
-    # CSS 主题
-    # ============================================================
-    style = ''
-      /* ----------------------------------------------------------
-        基础重置
-         ---------------------------------------------------------- */
-      window#waybar {
-        background: rgba(17, 17, 27, 0.85);
-        color: #cdd6f4;
-        border-bottom: 1px solid rgba(69, 71, 90, 0.35);
-        font-family: "JetBrains Mono Nerd Font", "Noto Sans CJK SC", sans-serif;
-        font-size: 13px;
-        font-weight: 500;
-      }
-
-      /* ----------------------------------------------------------
-        通用 Pill 容器
-         ---------------------------------------------------------- */
-      #workspaces,
-      #window,
-      #language,
-      #network,
-      #bluetooth,
-      #pulseaudio,
-      #pulseaudio-input,
-      #backlight,
-      #mpris,
-      #cpu,
-      #memory,
-      #temperature,
-      #disk,
-      #battery,
-      #clock,
-      #tray,
-      #idle_inhibitor,
-      #custom-powerprofile,
-      #custom-vpn,
-      #custom-notifications {
-        background: rgba(49, 50, 68, 0.45);
-        border-radius: 6px;
-        margin: 4px 2px;
-        padding: 0 10px;
-        border: none;
-        min-height: 0;
-        transition: all 0.25s ease;
-      }
-
-      .modules-left > widget:first-child > #workspaces { margin-left: 6px; }
-      .modules-right > widget:last-child > #tray { margin-right: 6px; }
-
-      /* ----------------------------------------------------------
-        统一 hover — 所有可交互模块
-         ---------------------------------------------------------- */
-      #language:hover,
-      #network:hover,
-      #bluetooth:hover,
-      #pulseaudio:hover,
-      #pulseaudio-input:hover,
-      #backlight:hover,
-      #mpris:hover,
-      #cpu:hover,
-      #memory:hover,
-      #temperature:hover,
-      #disk:hover,
-      #battery:hover,
-      #clock:hover,
-      #idle_inhibitor:hover,
-      #custom-powerprofile:hover,
-      #custom-vpn:hover,
-      #custom-notifications:hover {
-        background: rgba(88, 91, 112, 0.55);
-      }
-
-      /* ----------------------------------------------------------
-        分组间距 — 在功能组之间留白
-         ---------------------------------------------------------- */
-      #custom-vpn         { margin-right: 6px; }
-      #pulseaudio-input   { margin-left: 0; }
-
-      /* ----------------------------------------------------------
-        工作区
-         ---------------------------------------------------------- */
-      #workspaces { padding: 0 3px; }
-      #workspaces button {
-        padding: 0 7px;
-        background: transparent;
-        color: #6c7086;
-        border-radius: 4px;
-        transition: all 0.2s ease;
-      }
-      #workspaces button:hover {
-        background: rgba(137, 180, 250, 0.12);
-        color: #cdd6f4;
-      }
-      #workspaces button.active,
-      #workspaces button.focused {
-        color: #89b4fa;
-        background: rgba(137, 180, 250, 0.18);
-      }
-      #workspaces button.urgent {
-        color: #f38ba8;
-        background: rgba(243, 139, 168, 0.2);
-      }
-
-      /* ----------------------------------------------------------
-        窗口标题
-         ---------------------------------------------------------- */
-      #window {
-        font-weight: 600;
-        color: #cdd6f4;
-        background: rgba(49, 50, 68, 0.35);
-      }
-
-      /* ----------------------------------------------------------
-        输入法
-         ---------------------------------------------------------- */
-      #language {
-        color: #f5c2e7;
-        font-weight: 700;
-      }
-
-      /* ----------------------------------------------------------
-        电源模式 (asusctl)
-         ---------------------------------------------------------- */
-      #custom-powerprofile { font-size: 15px; padding: 0 8px; }
-      #custom-powerprofile.quiet       { color: #a6e3a1; }
-      #custom-powerprofile.balanced    { color: #89b4fa; }
-      #custom-powerprofile.performance { color: #f38ba8; }
-
-      /* ----------------------------------------------------------
-        防睡眠
-         ---------------------------------------------------------- */
-      #idle_inhibitor { font-size: 15px; padding: 0 8px; color: #a6ada8; }
-      #idle_inhibitor.activated { color: #f9e2af; }
-
-      /* ----------------------------------------------------------
-        网络
-         ---------------------------------------------------------- */
-      #network { color: #94e2d5; }
-      #network.disconnected { color: #f38ba8; }
-
-      /* ----------------------------------------------------------
-        蓝牙
-         ---------------------------------------------------------- */
-      #bluetooth { color: #89b4fa; }
-      #bluetooth.disabled,
-      #bluetooth.off { color: #6c7086; }
-
-      /* ----------------------------------------------------------
-        VPN
-         ---------------------------------------------------------- */
-      #custom-vpn { font-size: 14px; }
-      #custom-vpn.active   { color: #a6e3a1; }
-      #custom-vpn.inactive { color: #6c7086; }
-
-      /* ----------------------------------------------------------
-        音频输出
-         ---------------------------------------------------------- */
-      #pulseaudio { color: #89b4fa; }
-      #pulseaudio.muted { color: #f38ba8; }
-
-      /* ----------------------------------------------------------
-        麦克风
-         ---------------------------------------------------------- */
-      #pulseaudio-input { color: #cba6f7; }
-      #pulseaudio-input.muted { color: #f38ba8; }
-
-      /* ----------------------------------------------------------
-        屏幕亮度
-         ---------------------------------------------------------- */
-      #backlight { color: #f9e2af; }
-
-      /* ----------------------------------------------------------
-        媒体控制
-         ---------------------------------------------------------- */
-      #mpris { color: #a6e3a1; font-size: 12px; }
-      #mpris.paused { color: #6c7086; }
-
-      /* ----------------------------------------------------------
-        CPU / 内存 / 温度 / 磁盘
-         ---------------------------------------------------------- */
-      #cpu         { color: #fab387; }
-      #memory      { color: #a6e3a1; }
-      #temperature { color: #f2cdcd; }
-      #temperature.critical { color: #f38ba8; }
-      #disk        { color: #b4befe; }
-
-      /* ----------------------------------------------------------
-        电池
-         ---------------------------------------------------------- */
-      #battery { color: #94e2d5; }
-      #battery.charging { color: #a6e3a1; }
-      #battery.plugged  { color: #89b4fa; }
-      #battery.warning  { color: #fab387; }
-      #battery.critical { color: #f38ba8; }
-
-      /* ----------------------------------------------------------
-        通知中心
-         ---------------------------------------------------------- */
-      #custom-notifications { font-size: 14px; color: #89b4fa; }
-      #custom-notifications.dnd  { color: #f38ba8; }
-      #custom-notifications.has  { color: #f9e2af; }
-      #custom-notifications.none { color: #6c7086; }
-
-      /* ----------------------------------------------------------
-        时钟
-         ---------------------------------------------------------- */
-      #clock {
-        color: #f5c2e7;
-        font-weight: 700;
-      }
-
-      /* ----------------------------------------------------------
-        系统托盘
-         ---------------------------------------------------------- */
-      #tray > .passive { -gtk-icon-effect: dim; }
-      #tray > .needs-attention {
-        -gtk-icon-effect: highlight;
-        color: #f9e2af;
-      }
-
-      /* ----------------------------------------------------------
-        Tooltip
-         ---------------------------------------------------------- */
-      tooltip {
-        background: rgba(24, 24, 37, 0.96);
-        border: 1px solid rgba(137, 180, 250, 0.35);
-        border-radius: 8px;
-        padding: 8px 12px;
-        color: #cdd6f4;
-        font-size: 12px;
-      }
-      tooltip label { padding: 1px 0; }
-    '';
+    # CSS 主题 — 使用 Wynn-Dots 外部浮动胶囊风格
+    style = builtins.readFile ./waybar/style.css;
   };
 }

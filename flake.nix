@@ -15,6 +15,10 @@
     # nix-flatpak — declarative Flatpak management with overrides support
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 
+    # Stylix — system-wide theming with base16 color schemes
+    stylix.url = "github:danth/stylix";
+    stylix.inputs.nixpkgs.follows = "nixpkgs";
+
   };
 
   outputs =

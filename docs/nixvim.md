@@ -14,11 +14,12 @@ home-manager/modules/nixvim/
 ├── ui.nix            # 界面增强（状态栏、标签栏、缩进线、命令行等）
 ├── files.nix         # 文件树 + 模糊查找
 ├── treesitter.nix    # 语法高亮引擎
-├── lsp.nix           # 语言服务器（代码补全、跳转、诊断）
-├── completion.nix    # 自动补全菜单
+├── lsp.nix           # 语言服务器（代码补全、跳转、诊断）+ 诊断面板
+├── fidget.nix        # LSP 进度通知（右下角状态提示）
+├── completion.nix    # 自动补全菜单（含 cmdline 补全）
 ├── git.nix           # Git 集成（行内变更标记 + 分支对比 + 交互式面板）
 ├── formatting.nix    # 保存时自动格式化
-├── editing.nix       # 编辑辅助（注释、括号配对、彩虹括号、TODO 高亮）
+├── editing.nix       # 编辑辅助（注释、括号配对、彩虹括号、surround、TODO 高亮）
 ├── terminal.nix      # 内置终端
 ├── keymaps.nix       # 全局快捷键
 └── lua.nix           # 自定义 Lua 逻辑（兜底，放 nixvim 不支持的部分）
@@ -83,6 +84,13 @@ home-manager switch --flake .#kid@nixos
 | 按键延迟 | `timeoutlen=300` | 按键序列等待时间 300ms（太短可能误判，太长操作迟钝） |
 | 符号列 | `signcolumn=yes` | 始终显示左侧符号列（用于 Git 标记、诊断图标等） |
 | 真彩色 | `termguicolors=true` | 启用 24 位真彩色（主题效果更好） |
+| 补全菜单透明度 | `pumblend=10` | 补全菜单半透明，可以看到下面的代码 |
+| 字符隐藏 | `conceallevel=2` | Markdown / 帮助文件中隐藏语法标记字符（如 `**粗体**` 只显示 **粗体**） |
+| 断行缩进 | `breakindent=true` | 自动换行时保持缩进层级 |
+| 文件格式 | `fileformat=unix` | 统一使用 Unix 换行符 (LF) |
+| 文件编码 | `fileencoding=utf-8` | 默认使用 UTF-8 编码 |
+| 交换文件 | `swapfile=true` | 启用交换文件，防止意外崩溃时的数据丢失 |
+| 会话选项 | `sessionoptions=buffers,...` | 保存会话时包含缓冲区、目录、折叠、标签页等 |
 
 **Leader 键**是空格（`<Space>`）。这意味着所有以 `<leader>` 开头的快捷键，都是先按一下空格，再按后面的键。比如"保存"就是：空格 + w。
 
@@ -120,6 +128,42 @@ home-manager switch --flake .#kid@nixos
 | `<C-Right>` | 聚焦到右边窗格 |
 | `<leader>sv` | 垂直分屏（左右分） |
 | `<leader>sh` | 水平分屏（上下分） |
+| `<leader>s>` | 当前窗格加宽 5 列 |
+| `<leader>s<` | 当前窗格缩窄 5 列 |
+| `<leader>s+` | 当前窗格加高 3 行 |
+| `<leader>s-` | 当前窗格降低 3 行 |
+
+### 滚动
+
+| 快捷键 | 功能 |
+|--------|------|
+| `<C-d>` | 向下半页（光标居中） |
+| `<C-u>` | 向上半页（光标居中） |
+| `n` | 下一搜索结果（居中） |
+| `N` | 上一搜索结果（居中） |
+
+### 系统剪贴板
+
+| 快捷键 | 模式 | 功能 |
+|--------|------|------|
+| `<leader>y` | 普通/可视 | 复制到系统剪贴板 |
+| `<leader>Y` | 普通/可视 | 复制整行到系统剪贴板 |
+
+### Visual 模式增强
+
+| 快捷键 | 功能 |
+|--------|------|
+| `<` / `>` | 减少/增加缩进（保持选中） |
+| `J` / `K` | 将选中行向下/向上移动 |
+
+### 诊断面板（Trouble）
+
+| 快捷键 | 功能 |
+|--------|------|
+| `<leader>dd` | 切换工作区诊断面板 |
+| `<leader>db` | 切换当前文件诊断面板 |
+| `<leader>dl` | 切换 Location 列表面板 |
+| `<leader>dq` | 切换 Quickfix 列表面板 |
 
 ### 缓冲区切换
 
@@ -220,8 +264,9 @@ home-manager switch --flake .#kid@nixos
 | `<leader>g` | 󰊢 Git |
 | `<leader>h` | Git hunk 操作 (gitsigns) |
 | `<leader>c` |  代码 (LSP/Format) |
-| `<leader>d` |  诊断 |
-| `<leader>s` | 󰩬 窗格 |
+| `<leader>d` |  诊断（Trouble 面板 + 悬浮诊断） |
+| `<leader>s` | 󰩬 窗格（分割 + 调整大小） |
+| `<leader>y` | 复制到系统剪贴板 |
 | `<leader>t` |  终端 |
 | `<leader>x` | 󰅖 关闭缓冲区 |
 | `<leader>q` | 󰅖 关闭分窗 |
@@ -263,6 +308,11 @@ Telescope 是 Neovim 的"万能搜索框"。它的核心功能是通过模糊匹
 - `<C-j>` / `<C-k>` 上下移动选择
 - 输入关键词实时过滤结果
 - 回车确认选择
+
+**fzf-native 扩展**：启用了 `telescope-fzf-native`，这是一套用 Rust 重写的 fzf 模糊匹配算法。相比 Lua 原生实现，排序更智能（相似度感知），速度更快。首次构建时会编译该 C/Rust 组件，之后缓存。
+
+**搜索忽略**：以下目录不会被搜索，避免噪音和性能问题：
+- `.git/`、`node_modules/`、`target/`、`result/`、`.direnv/`
 
 ---
 
@@ -319,6 +369,9 @@ LSP（Language Server Protocol，语言服务器协议）是代码智能的基�
 | `html` | HTML | |
 | `cssls` | CSS | |
 | `jsonls` | JSON | |
+| `pyright` | Python | Python 静态类型检查和补全 |
+| `dockerls` | Docker | Dockerfile / docker-compose 补全和诊断 |
+| `yamlls` | YAML | YAML 语法检查和 schema 验证 |
 
 **特殊配置说明**：
 - `nil_ls` 的格式化器被显式设置为 `nixfmt`，确保 Nix 文件格式化风格一致
@@ -335,6 +388,37 @@ lspsaga 提供了更好看的 LSP 相关窗口（悬浮文档、代码操作菜�
 
 ---
 
+### 5.5 LSP 进度提示 — fidget.nvim（fidget.nix）
+
+在编辑器右下角显示 LSP 的实时状态：
+
+- **进度条**：当 LSP 正在分析代码、索引项目时，右下角会显示进度
+- **诊断统计**：当前文件的错误/警告数量
+- **LSP 服务器状态**：显示哪些 LSP 正在运行
+
+配置为轻量模式：最多同时显示 16 个进度条，完成后 3 秒自动消失，日志级别设为 `warn`。
+
+---
+
+### 5.6 诊断列表面板 — trouble.nvim（lsp.nix）
+
+Trouble 提供了一个集中的诊断浏览面板，比 `vim.diagnostic.setqflist()` 更方便：
+
+| 快捷键 | 功能 |
+|--------|------|
+| `<leader>dd` | 切换**工作区**诊断面板（所有文件的错误/警告） |
+| `<leader>db` | 切换**当前文件**诊断面板 |
+| `<leader>dl` | 切换 Location 列表 |
+| `<leader>dq` | 切换 Quickfix 列表 |
+
+在 Trouble 面板中：
+- `q` 关闭面板
+- `<CR>` 跳转到对应位置
+- 自动预览（`auto_preview=true`）：光标移动时在另一窗格预览
+- 关闭后自动恢复窗口布局（`auto_close=true`）
+
+---
+
 ### 6. 代码补全 — nvim-cmp（completion.nix）
 
 `nvim-cmp` 是 Neovim 的补全引擎，它本身不提供补全项，而是从多个"来源"收集：
@@ -347,6 +431,16 @@ lspsaga 提供了更好看的 LSP 相关窗口（悬浮文档、代码操作菜�
 | `buffer` | 当前已打开文件中的单词（相当于全文补全） |
 
 **代码片段**：通过 `luasnip` + `friendly-snippets` 实现。`friendly-snippets` 是一个社区维护的代码片段集合，覆盖了几十种语言。例如在 Rust 文件中输入 `fn` 然后按 `<Tab>`，可能会展开为一个完整的函数模板（取决于具体的片段定义）。
+
+**性能优化**：大文件（>200KB）不启用补全（`performance.max_size=200`），避免补全卡顿。
+
+**命令行补全**（`cmp-cmdline` + `cmp-cmdline-history`）：
+
+除了代码补全，本配置还启用了命令行补全。当你在 `:` 命令模式或 `/` 搜索模式中输入时，也会弹出补全菜单，来源包括：
+- 命令历史记录
+- 文件路径
+
+补全窗口使用圆角边框 + 半透明效果（`pumblend=10`），与整体 UI 风格统一。
 
 ---
 
@@ -562,7 +656,21 @@ Neogit 提供一个全屏的 Git 界面，灵感来自 Emacs 的 Magit。打开�
 
 不同嵌套层级的括号用不同颜色显示，嵌套关系一目了然。
 
-#### 11.4 todo-comments — 特殊注释高亮
+#### 11.4 mini.surround — surround 操作
+
+快速在文本周围添加、删除、替换括号、引号等包围字符。与 `nvim-surround` 功能相同，但基于 `mini.nvim` 生态，更轻量。
+
+| 操作 | 用法示例 | 效果 |
+|------|----------|------|
+| **添加** | `saiw"` | 给光标所在单词加双引号 → `"word"` |
+| **添加** | `sa2f)` | 向前找 2 个字符并加括号 |
+| **删除** | `sd"` | 删除最近的 `"` 包围 → `"hello"` → `hello` |
+| **替换** | `sr"'` | 把双引号换成单引号 → `"hello"` → `'hello'` |
+| **查找替换** | `sfc旧新` | 向前查找并替换包围 |
+
+> 这些快捷键使用 `s` 前缀（不是 leader），which-key 会自动发现并显示。
+
+#### 11.5 todo-comments — 特殊注释高亮
 
 高亮特定关键词的注释，并配有图标，方便快速定位待办事项：
 
@@ -630,7 +738,7 @@ Neogit 提供一个全屏的 Git 界面，灵感来自 Emacs 的 Magit。打开�
 
 ## 架构说明
 
-本配置按功能拆分为 13 个模块，由 `default.nix` 统一引入。这种设计的好处：
+本配置按功能拆分为 14 个模块，由 `default.nix` 统一引入。这种设计的好处：
 - **可维护**：修改格式化配置不会影响 LSP 配置
 - **可读**：每个文件职责单一，新人一眼能看懂
 - **可复用**：如果将来要给另一台机器配 Neovim，可以直接复用子模块

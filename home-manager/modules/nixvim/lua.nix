@@ -8,37 +8,63 @@
     vim.api.nvim_set_hl(0, "TermSepLine", { fg = "#1e1e2e", bg = "#1e1e2e" })
 
     -- ============================================================
-    -- 底部终端 (使用 toggleterm)
+    -- 底部终端 (使用 toggleterm — 浮动窗口避免横跨文件树)
     -- ============================================================
     local Terminal = require("toggleterm.terminal").Terminal
 
     local function _term_on_open(term)
       vim.bo[term.bufnr].buflisted = true
       local win = term.window
-      if win and vim.api.nvim_win_is_valid(win) then
-        vim.wo[win].number = false
-        vim.wo[win].relativenumber = false
-        vim.wo[win].signcolumn = "no"
-        vim.wo[win].cursorline = false
-        vim.wo[win].winhighlight = "WinSeparator:TermSepLine"
-        vim.wo[win].winbar = "%#TermSepBar#  终端 %="
+      if not (win and vim.api.nvim_win_is_valid(win)) then return end
+
+      vim.wo[win].number = false
+      vim.wo[win].relativenumber = false
+      vim.wo[win].signcolumn = "no"
+      vim.wo[win].cursorline = false
+      vim.wo[win].winhighlight = "WinSeparator:TermSepLine"
+      vim.wo[win].winbar = "%#TermSepBar#   终端 %="
+    end
+
+    -- 获取 neo-tree 侧边栏宽度（浮动终端定位用）
+    local function _neo_tree_width()
+      for _, w in ipairs(vim.api.nvim_list_wins()) do
+        local ft = vim.bo[vim.api.nvim_win_get_buf(w)].filetype
+        if ft == "neo-tree" and vim.api.nvim_win_get_config(w).relative == "" then
+          return vim.api.nvim_win_get_width(w)
+        end
       end
+      return 0
     end
 
     local _default_term = Terminal:new({
-      direction = "horizontal",
+      direction = "float",
       close_on_exit = true,
       on_open = _term_on_open,
+      float_opts = {
+        border = "none",
+        width = function() return vim.o.columns - _neo_tree_width() end,
+        height = 15,
+        row = function() return vim.o.lines - 17 end,
+        col = function() return _neo_tree_width() end,
+      },
     })
 
     vim.keymap.set("n", "<leader>tt", function() _default_term:toggle() end, { desc = "切换终端" })
     vim.keymap.set("t", "<leader>tt", "<cmd>ToggleTerm<CR>", { desc = "关闭终端" })
+    vim.keymap.set("t", "<leader>q", "<cmd>ToggleTerm<CR>", { desc = "关闭终端" })
 
     vim.keymap.set("n", "<leader>tn", function()
       local new_term = Terminal:new({
-        direction = "horizontal",
+        direction = "float",
         close_on_exit = true,
         on_open = _term_on_open,
+        float_opts = {
+          border = "none",
+          width = function() return vim.o.columns - _neo_tree_width() end,
+          height = 15,
+          row = function() return vim.o.lines - 17 end,
+          col = function() return _neo_tree_width() end,
+        },
       })
       new_term:open()
     end, { desc = "新终端" })

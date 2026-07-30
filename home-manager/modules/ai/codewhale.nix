@@ -3,11 +3,11 @@
 let
   codeWhale = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "Hmbown/CodeWhale";
-    version = "0.9.1";
+    version = "0.9.2";
 
     src = pkgs.fetchurl {
       url = "https://github.com/${pname}/releases/download/v${version}/codewhale-linux-x64.tar.gz";
-      sha256 = "2450dca1cb2bd1a18e9d9b5a09125ecc78d01cf4aff932fab8859f027d9a6d34";
+      sha256 = "fceb7eb3f49f1dac78823425f74ea2a0c69f8e807bc40937d0198c0dfadeb173";
     };
 
     unpackPhase = ''
