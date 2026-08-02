@@ -7,6 +7,7 @@
     ./files.nix
     ./treesitter.nix
     ./lsp.nix
+    ./fidget.nix
     ./completion.nix
     ./git.nix
     ./formatting.nix

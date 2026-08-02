@@ -14,6 +14,8 @@
     ./modules/waybar.nix
     ./modules/swayidle.nix
     ./modules/programs.nix
+    ./modules/devbox.nix
+    ./modules/eww.nix
     ./modules/ai/codewhale.nix
     ./modules/vscode.nix
   ];

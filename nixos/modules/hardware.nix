@@ -1,5 +1,16 @@
-{ ... }:
+{ config, ... }:
 {
+  # /mnt/data — btrfs 数据分区（Steam 库等）
+  fileSystems."/mnt/data" = {
+    device = "/dev/disk/by-uuid/0ff62194-ce58-4600-b976-61764f41ffe0";
+    fsType = "btrfs";
+    options = [
+      "defaults"
+      "noatime"
+      "compress=zstd"
+    ];
+  };
+
   #   打不上驱动时用
   #   hardware.enableAllFirmware = true;
   #蓝牙

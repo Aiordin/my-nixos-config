@@ -1,4 +1,4 @@
-# LSP 语言服务器配置 + lspsaga 文档浮动窗
+# LSP 语言服务器配置 + lspsaga 文档浮动窗 + trouble.nvim 诊断面板
 {
   pkgs,
   ...
@@ -52,6 +52,15 @@
         html.enable = true;
         cssls.enable = true;
         jsonls.enable = true;
+
+        # Python
+        pyright.enable = true;
+
+        # Docker
+        dockerls.enable = true;
+
+        # YAML
+        yamlls.enable = true;
       };
 
       keymaps = {
@@ -86,5 +95,52 @@
         };
       };
     };
+
+    # 诊断列表面板 — 替代 vim.diagnostic.setqflist()
+    # <leader>dd — 切换工作区诊断列表
+    # <leader>db — 切换缓冲区诊断列表
+    # <leader>dl — 切换 Location 列表
+    # <leader>dq — 切换 Quickfix 列表
+    trouble = {
+      enable = true;
+      settings = {
+        auto_close = true;
+        auto_preview = true;
+        focus = false;
+        modes = {
+          diagnostics = {
+            auto_open = false;
+          };
+        };
+      };
+    };
   };
+
+  # Trouble 快捷键
+  programs.nixvim.keymaps = [
+    {
+      mode = "n";
+      key = "<leader>dd";
+      action = "<cmd>Trouble diagnostics toggle<CR>";
+      options.desc = "诊断面板 (workspace)";
+    }
+    {
+      mode = "n";
+      key = "<leader>db";
+      action = "<cmd>Trouble diagnostics toggle filter.buf=0<CR>";
+      options.desc = "诊断面板 (buffer)";
+    }
+    {
+      mode = "n";
+      key = "<leader>dl";
+      action = "<cmd>Trouble loclist toggle<CR>";
+      options.desc = "Location 列表";
+    }
+    {
+      mode = "n";
+      key = "<leader>dq";
+      action = "<cmd>Trouble qflist toggle<CR>";
+      options.desc = "Quickfix 列表";
+    }
+  ];
 }
