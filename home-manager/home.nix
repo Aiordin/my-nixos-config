@@ -7,8 +7,7 @@
 {
   # You can import other home-manager modules here
   imports = [
-    inputs.nixvim.homeModules.nixvim
-    ./modules/nixvim
+    ./modules/neovim
     ./modules/niri/niri.nix
     ./modules/starship.nix
     ./modules/waybar.nix

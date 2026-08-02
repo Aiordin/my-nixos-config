@@ -9,9 +9,6 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Nixvim — declarative Neovim config
-    nixvim.url = "github:nix-community/nixvim";
-
     # nix-flatpak — declarative Flatpak management with overrides support
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 

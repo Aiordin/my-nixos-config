@@ -20,7 +20,7 @@ nix-config/
 ├── home-manager/
 │   ├── home.nix               # Home Manager 入口
 │   └── modules/
-│       ├── nixvim/            # Neovim 配置（14 个子模块）
+│       ├── neovim/            # Neovim 配置（LazyVim）
 │       ├── niri/              # niri 窗口管理器
 │       ├── waybar/            # 状态栏
 │       ├── eww/               # Elkowar's Wacky Widgets
@@ -28,7 +28,7 @@ nix-config/
 │       ├── programs.nix       # 终端工具和基础程序
 │       └── ...
 └── docs/
-    ├── nixvim.md              # Neovim 配置详解
+    ├── neovim.md              # Neovim/LazyVim 配置详解
     └── m.md                   # 备忘录
 ```
 
@@ -63,18 +63,18 @@ direnv allow                  # 信任配置
 
 详情见 `home-manager/modules/devbox.nix`。
 
-### Neovim — 声明式 IDE 配置
+### Neovim — LazyVim 发行版
 
-14 个模块、40+ 个插件、完整的 LSP 支持。覆盖 Nix/Lua/TS/Rust/Go/Python/Docker 等多种语言。
+基于 [LazyVim](https://github.com/LazyVim/LazyVim) 的 Neovim 配置。插件通过 Nix 管理，无需网络即可构建；自定义配置放在 `lua/` 目录下。
 
-- **主题**：Catppuccin Mocha
-- **LSP**：自动补全、跳转、悬浮文档、诊断面板（Trouble）
+- **主题**：Catppuccin / TokyoNight（LazyVim 内置多主题切换）
+- **LSP**：自动补全、跳转、悬浮文档、诊断面板
 - **格式化**：保存时自动格式化（conform.nvim）
-- **Git**：行内变更标记 + 交互式面板 + 差异审查
+- **Git**：行内变更标记 + 交互式面板
 - **搜索**：Telescope + fzf-native
 - **快捷键**：Space 作为 leader，which-key 菜单提示
 
-完整文档：[docs/nixvim.md](docs/nixvim.md)
+自定义配置目录：`home-manager/modules/neovim/lua/`
 
 ## 更新配置
 

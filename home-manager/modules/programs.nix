@@ -70,5 +70,6 @@
     socat
     jaq
     tree
+    wl-clipboard # Wayland 剪贴板（Neovim unnamedplus 依赖）
   ];
 }
