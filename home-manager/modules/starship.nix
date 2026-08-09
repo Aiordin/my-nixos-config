@@ -5,6 +5,42 @@
     enableCompletion = true;
     syntaxHighlighting.enable = true;
     autosuggestion.enable = true;
+
+    # Clash Verge (mihomo) 代理管理（initContent 替代已弃用的 initExtra）：
+    # - proxy on / proxy off 手动切换
+    # - 启动时自动探测 7897 端口，仅在 mihomo 运行时启用，
+    #   避免 clash 未启动时终端网络因 connection refused 全部失败
+    initContent = ''
+      # 手动切换代理
+      proxy() {
+        case "$1" in
+          on)
+            export http_proxy="http://127.0.0.1:7897"
+            export https_proxy="http://127.0.0.1:7897"
+            export all_proxy="socks5://127.0.0.1:7897"
+            export no_proxy="localhost,127.0.0.1,::1"
+            echo "proxy on: 127.0.0.1:7897"
+            ;;
+          off)
+            unset http_proxy https_proxy all_proxy no_proxy \
+                  HTTP_PROXY HTTPS_PROXY ALL_PROXY NO_PROXY
+            echo "proxy off"
+            ;;
+          *)
+            if [[ -n "$http_proxy" ]]; then
+              echo "proxy on: $http_proxy"
+            else
+              echo "proxy off"
+            fi
+            ;;
+        esac
+      }
+
+      # 启动时自动探测：mihomo 监听 7897 才启用代理
+      if ss -tln 2>/dev/null | grep -q ':7897 '; then
+        proxy on >/dev/null
+      fi
+    '';
   };
 
 
