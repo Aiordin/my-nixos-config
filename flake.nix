@@ -27,6 +27,19 @@
     }@inputs:
     let
       system = "x86_64-linux";
+
+      # Nordic-cursors 光标主题包：源文件在仓库 assets/nordic-cursors/ 内，离线可复现
+      nordic-cursors-overlay = final: prev: {
+        nordic-cursors = final.stdenvNoCC.mkDerivation {
+          pname = "nordic-cursors";
+          version = "0.1.0";
+          src = ./assets/nordic-cursors;
+          installPhase = ''
+            mkdir -p $out/share/icons/Nordic-cursors
+            cp -r $src/. $out/share/icons/Nordic-cursors/
+          '';
+        };
+      };
     in
     {
       # NixOS configuration entrypoint
@@ -37,7 +50,10 @@
           inherit system;
           specialArgs = { inherit inputs; };
           # > Our main nixos configuration file <
-          modules = [ ./nixos/configuration.nix ];
+          modules = [
+            ./nixos/configuration.nix
+            { nixpkgs.overlays = [ nordic-cursors-overlay ]; }
+          ];
         };
       };
 
@@ -52,6 +68,7 @@
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfree = true;
+            overlays = [ nordic-cursors-overlay ];
           };
           extraSpecialArgs = {
             inherit inputs;

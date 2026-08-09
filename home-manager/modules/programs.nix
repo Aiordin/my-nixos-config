@@ -8,6 +8,8 @@
   programs.fuzzel.enable = true; # Super+D in the default setting (app launcher)
   programs.swaylock.enable = true; # Super+Alt+L in the default setting (screen locker)
   programs.waybar.enable = true; # launch on startup in the default setting (bar)
+  # clash-verge-rev: Clash Meta GUI 客户端（社区维护 fork）
+  # 原 programs.clash-verge 选项在 home-manager 中不存在，改为直接安装包
   services.mako = {
     enable = true; # notification daemon — Catppuccin Mocha 美化
 
@@ -61,6 +63,7 @@
   };
 
   home.packages = with pkgs; [
+    clash-verge-rev # Clash Meta GUI 客户端
     nixfmt
     xwayland-satellite
     linux-wallpaperengine # Steam 壁纸引擎（Wayland 层渲染）
