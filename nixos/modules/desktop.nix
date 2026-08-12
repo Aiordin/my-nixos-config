@@ -59,4 +59,8 @@
 #   environment.pathsToLink = [
 #     "/share/plasma/plasmoids"
 #   ];
+
+  # nautilus 文件管理器挂载支持（U盘 / 移动硬盘 / 网络共享）
+  services.gvfs.enable = true;    # GVFS 用户态虚拟文件系统，提供挂载 UI
+  services.udisks2.enable = true; # udisks2 磁盘挂载服务（gvfs 的挂载后端）
 }
