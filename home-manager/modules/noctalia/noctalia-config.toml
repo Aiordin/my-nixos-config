@@ -7,6 +7,7 @@ tint_intensity = 0.0
 
 [bar]
 order = ["bar"]
+visibility = "dodge"
 
 [bar.bar]
 background_opacity = 0.0
@@ -19,7 +20,7 @@ capsule_padding = 10.0
 capsule_radius = 80
 capsule_thickness = 0.95999998226761818
 enabled = true
-panel_overlap = 12
+panel_overlap = 0
 font_family = "JetBrains Mono"
 margin_ends = 8
 margin_edge = 6
@@ -31,6 +32,7 @@ end = [
     "wallpaper",
     "mpvpaper",
     "volume",
+    "temp",
     "notifications",
     "session",
 ]
@@ -203,6 +205,9 @@ builtin_ids = ["kitty", "niri", "qt", "starship"]
 community_ids = []
 
 # NyxMellow 动态 fcitx5 皮肤（mellow 形状 + Material You 自动取色）
+# 输入模板由 home-manager 声明：home-manager/modules/fcitx5/nyxmellow/
+# 输出写回主题目录，fcitx5 的 candidate 窗口通过
+# ~/.config/fcitx5/conf/classicui.conf 的 Theme=nyxmellow 使用它
 [theme.templates.user.nyxmellow_theme]
 index = 0
 input_path = "/home/kid/.local/share/fcitx5/themes/nyxmellow/templates/theme.conf"
@@ -236,9 +241,6 @@ format = "{:%a, %d %b %H:%M}"
 [widget.tray]
 detached_panel = true
 drawer = true
-
-[widget."ray/echolyrics:echolyrics"]
-capsule = false
 
 [widget.mpvpaper]
 type = "noctalia/mpvpaper:mpvpaper"

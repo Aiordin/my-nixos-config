@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -10,8 +10,8 @@
 
   programs.nano.enable = false;
   environment.variables = {
-    EDITOR = "vim";
-    VISUAL = "vim";
+    EDITOR = "nvim";
+    VISUAL = "nvim";
   };
 
   # 商店启用
@@ -33,11 +33,14 @@
   programs.gamemode.enable = true;
   security.polkit.enable = true;
 
+  services.v2raya.enable = true; 
+
   # Install steam
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
+    gamescopeSession.enable = true;
   };
 
 }

@@ -12,15 +12,18 @@
     ./modules/hardware.nix
     ./modules/network.nix
     ./modules/desktop.nix
-    ./modules/fcitx5.nix
+    ./modules/fcitx5.nix # 仅 locale，输入法本身在 home-manager
     ./modules/fonts.nix
     ./modules/programs.nix
     ./modules/firewall.nix
-    #       ./modules/regreet.nix
+    ./modules/ssh.nix # OpenSSH 服务端（端口 22，随 enable 自动放行）
+    ./modules/clash-verge.nix # Clash Verge：服务模式 + TUN 能力
     ./modules/docker.nix
     ./modules/apps.nix
     ./modules/flatpak.nix
     ./modules/stylix.nix
+    ./modules/KVM.nix
+    ./modules/waydroid.nix
 
     # nix-flatpak module for declarative Flatpak override management
     inputs.nix-flatpak.nixosModules.nix-flatpak
@@ -62,10 +65,11 @@
       "render"
       "docker"
     ];
+    # 注意：输入法（fcitx5 + fcitx5-configtool）已迁移到 home-manager，
+    # 见 home-manager/modules/fcitx5/
     packages = with pkgs; [
       kdePackages.kate
       #  thunderbird
-      qt6Packages.fcitx5-configtool
     ];
   };
 
@@ -82,12 +86,11 @@
     exfat
     nvtopPackages.full
     linux-wifi-hotspot
+    llama-cpp-vulkan
   ];
 
   # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
+  # OpenSSH daemon 见 ./modules/ssh.nix
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

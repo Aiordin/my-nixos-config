@@ -1,4 +1,10 @@
-{ pkgs, ... }:
+# ============================================================
+# 系统级本地化设置
+# ============================================================
+# 输入法（fcitx5）已迁移到 home-manager 管理：
+#   home-manager/modules/fcitx5/
+# 系统侧只保留 locale，输入法相关包不再进系统 profile。
+# ============================================================
 {
   # Select internationalisation properties.
   i18n.defaultLocale = "zh_CN.UTF-8";
@@ -14,22 +20,4 @@
     LC_TELEPHONE = "zh_CN.UTF-8";
     LC_TIME = "zh_CN.UTF-8";
   };
-
-  i18n.inputMethod = {
-    enable = true;
-    type = "fcitx5";
-    fcitx5.waylandFrontend = true;
-    fcitx5.addons = with pkgs; [
-      qt6Packages.fcitx5-chinese-addons
-      fcitx5-mozc
-      fcitx5-gtk
-      kdePackages.fcitx5-qt
-      (fcitx5-rime.override {
-        rimeDataPkgs = [
-          rime-ice
-        ];
-      })
-    ];
-  };
-
 }

@@ -1,0 +1,34 @@
+// 沉浸模式覆盖：窗口不透明、无模糊、无边框和无间距。
+blur {
+    off
+}
+
+layout {
+    gaps 0
+    focus-ring {
+        off
+    }
+    border {
+        off
+    }
+    shadow {
+        off
+    }
+}
+
+window-rule {
+    opacity 1.0
+    background-effect {
+        blur false
+        xray false
+    }
+    focus-ring {
+        off
+    }
+    border {
+        off
+    }
+    shadow {
+        off
+    }
+}

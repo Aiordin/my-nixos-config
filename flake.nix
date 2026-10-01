@@ -15,7 +15,13 @@
     # Stylix — system-wide theming with base16 color schemes
     stylix.url = "github:danth/stylix";
     stylix.inputs.nixpkgs.follows = "nixpkgs";
-
+ 
+    
+    noctalia-greeter = {
+      url = "github:noctalia-dev/noctalia-greeter";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    
   };
 
   outputs =

@@ -64,3 +64,20 @@ update_ini "$HOME/.config/gtk-3.0/settings.ini" "gtk-theme-name" "$gtk_theme"
 
 # 3. Update GTK 4.0 settings.ini
 update_ini "$HOME/.config/gtk-4.0/settings.ini" "gtk-application-prefer-dark-theme" "$dark_pref"
+
+# 4. 光标样式统一
+#    GTK 侧曾经单独写成 36px，而 niri config.kdl / home.nix pointerCursor /
+#    dconf 都是 Bibata-Modern-Ice 24 —— 窗口内光标和合成器光标会大小不一。
+#    这里从 XCURSOR_THEME / XCURSOR_SIZE（home-manager 的 pointerCursor 导出）
+#    回写 GTK3/GTK4，保证单一事实来源。
+cursor_theme="${XCURSOR_THEME:-Bibata-Modern-Ice}"
+cursor_size="${XCURSOR_SIZE:-24}"
+
+for gtk_version in 3.0 4.0; do
+    update_ini "$HOME/.config/gtk-$gtk_version/settings.ini" "gtk-cursor-theme-name" "$cursor_theme"
+    update_ini "$HOME/.config/gtk-$gtk_version/settings.ini" "gtk-cursor-theme-size" "$cursor_size"
+done
+
+# 5. GSettings 侧同步（Firefox / Chromium / Qt-GTK 平台主题都读这一份）
+set_gsettings cursor-theme "$cursor_theme"
+set_gsettings cursor-size "$((cursor_size))"

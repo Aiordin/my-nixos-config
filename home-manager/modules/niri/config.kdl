@@ -23,11 +23,21 @@ overview {
 environment {
     XDG_CURRENT_DESKTOP "niri"
     XDG_SESSION_TYPE "wayland"
-    GTK_IM_MODULE ""
     ELECTRON_OZONE_PLATFORM_HINT "auto"
     QT_QPA_PLATFORM "wayland;xcb"
     QT_QPA_PLATFORMTHEME "gtk3"
     QT_WAYLAND_DISABLE_WINDOWDECORATION "1"
+
+    // ── 输入法（fcitx5，wayland 前端）─────────────────────────────
+    // 由 home-manager/modules/fcitx5 提供。GTK/QT_IM_MODULE 留空：应用走
+    // wayland text-input 协议，由 fcitx5 的 wayland 前端统一处理，避免
+    // 同一按键被 IM 模块与 text-input 双重接收。
+    // 下面几项只对不认 wayland 协议的程序生效（XWayland / SDL 游戏 / kitty）。
+    GTK_IM_MODULE ""
+    QT_IM_MODULE ""
+    XMODIFIERS "@im=fcitx"
+    SDL_IM_MODULE "fcitx"
+    GLFW_IM_MODULE "ibus"
 
     // NVIDIA environment variables (uncommented automatically by install.sh if NVIDIA GPU is detected)
     // GBM_BACKEND "nvidia-drm"
@@ -63,7 +73,7 @@ recent-windows {
 }
 
 cursor {
-    xcursor-theme "Nordic-cursors"
+    xcursor-theme "Bibata-Modern-Ice"
     xcursor-size 24
 }
 
@@ -79,3 +89,6 @@ include "noctalia.kdl"
 // 你也可以在当前目录创建 __custom__/ 文件夹放置个人脚本。
 // ==========================================================
 include "__custom__.kdl"
+
+// 沉浸模式动态覆盖，必须放在所有布局和窗口规则之后
+include "immersive.kdl"

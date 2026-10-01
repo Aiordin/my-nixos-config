@@ -13,7 +13,4 @@
     dns = "dnsmasq";
     wifi.backend = "wpa_supplicant";
   };
-
-  #v2ray
-  services.v2raya.enable = true;
 }

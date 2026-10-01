@@ -1,3 +1,8 @@
+# ⚠️ 已停用（未在 home-manager/home.nix 中 import）
+# 原因：Noctalia 自带空闲管理（锁屏 300s / 关屏 360s / 挂起 900s），
+# 两套空闲守护会互相抢屏（swaylock 与 Noctalia 锁屏）。
+# 如需恢复：在 home.nix 重新 import 本文件，并把
+# modules/programs.nix 里的 services.swayidle.enable 改回 true。
 { pkgs,... }:
 {
     services.swayidle = {

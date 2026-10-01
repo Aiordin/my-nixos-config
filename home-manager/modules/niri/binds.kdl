@@ -56,6 +56,9 @@ binds {
     // 切换护眼模式 (调暖色温并关闭透明度/毛玻璃) / Toggle eye-care mode (warmer temp & disable blur/transparency)
     Mod+N { spawn "~/.config/niri/toggle-eyecare.sh"; }
 
+    // 两个不同模式窗口聚焦切换
+    Mod+V { switch-focus-between-floating-and-tiling; }
+
     // -------------------------------------------------------------------------
     // 3. 焦点导航与窗口移动 / Focus Navigation & Window Movement
     // -------------------------------------------------------------------------
@@ -102,6 +105,12 @@ binds {
 
     // 全屏显示当前窗口 / Fullscreen focused window
     Mod+M { fullscreen-window; }
+
+    // 将当前窗口切换为“窗口化全屏”
+    Mod+Shift+M { toggle-windowed-fullscreen; }
+
+    // 切换沉浸模式：关闭透明/模糊、边框、阴影和窗口间距
+    Mod+G { spawn "~/.config/niri/toggle-immersive.sh"; }
 
     // 循环切换预设列宽比例 / Switch preset column widths
     Mod+Space { switch-preset-column-width; }

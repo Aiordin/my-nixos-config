@@ -53,6 +53,19 @@
       source = ./toggle-eyecare.sh;
       force = true;
     };
+    # 沉浸模式切换脚本与覆盖片段
+    "niri/toggle-immersive.sh" = {
+      source = ./toggle-immersive.sh;
+      force = true;
+    };
+    "niri/immersive_normal.kdl" = {
+      source = ./immersive_normal.kdl;
+      force = true;
+    };
+    "niri/immersive_on.kdl" = {
+      source = ./immersive_on.kdl;
+      force = true;
+    };
   };
 
   # 确保 effects.kdl 初始链接存在（toggle-eyecare.sh --sync 也会在 niri 启动时修复）
@@ -63,6 +76,17 @@
 
     if [ ! -L "$EFFECTS_LINK" ] && [ ! -f "$EFFECTS_LINK" ]; then
       ln -sf "$EFFECTS_NORMAL" "$EFFECTS_LINK"
+    fi
+  '';
+
+  # 首次部署使用正常模式，之后保留用户通过 Mod+G 选择的状态
+  home.activation.createImmersiveLink = ''
+    NIRI_DIR="$HOME/.config/niri"
+    IMMERSIVE_LINK="$NIRI_DIR/immersive.kdl"
+    IMMERSIVE_NORMAL="$NIRI_DIR/immersive_normal.kdl"
+
+    if [ ! -L "$IMMERSIVE_LINK" ] && [ ! -f "$IMMERSIVE_LINK" ]; then
+      ln -sf "$IMMERSIVE_NORMAL" "$IMMERSIVE_LINK"
     fi
   '';
 }
