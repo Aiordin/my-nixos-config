@@ -24,6 +24,7 @@
     ./modules/stylix.nix
     ./modules/KVM.nix
     ./modules/waydroid.nix
+    ./modules/samba.nix # SMB 文件共享：win10 虚拟机访问 \\192.168.122.1\Share
 
     # nix-flatpak module for declarative Flatpak override management
     inputs.nix-flatpak.nixosModules.nix-flatpak

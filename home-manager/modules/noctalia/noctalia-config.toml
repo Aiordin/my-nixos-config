@@ -222,7 +222,17 @@ output_path = "/home/kid/.local/share/fcitx5/themes/nyxmellow/panel.svg"
 index = 2
 input_path = "/home/kid/.local/share/fcitx5/themes/nyxmellow/templates/highlight.svg"
 output_path = "/home/kid/.local/share/fcitx5/themes/nyxmellow/highlight.svg"
-post_hook = "if pgrep -x fcitx5 >/dev/null 2>&1; then pkill -x fcitx5; sleep 1; fcitx5 -d >/dev/null 2>&1 & fi"
+# 主题重渲染后必须让 fcitx5 重读主题（classicui 只在启动时读一次）。
+# 走 systemd 服务而不是 pkill + 手动 fcitx5 -d：服务单元里注入了
+# QT_PLUGIN_PATH（qtsvg 的 imageformats/libqsvg.so），手动启动的实例没有
+# 这个环境，SVG 背景会再次加载失败、退化成纯色块。
+#
+# 两个坑：
+#   1. fcitx5 的真实进程名是 .fcitx5-wrapped（Nix wrapper 脚本 exec 后的
+#      comm），`pkill -x fcitx5` 根本匹配不到，必须用 -f 匹配命令行；
+#   2. 会话里可能还跑着 XDG autostart 拉起的游离实例，它占着 D-Bus 名字，
+#      会让 fcitx5-daemon.service 启动即退出，所以先 stop 掉它。
+post_hook = "systemctl --user stop app-org.fcitx.Fcitx5@autostart.service 2>/dev/null || true; pkill -f '/bin/fcitx5$' 2>/dev/null || true; sleep 0.3; systemctl --user restart fcitx5-daemon 2>/dev/null || true"
 
 [wallpaper]
 directory = "/home/kid/Pictures/Wallpapers"

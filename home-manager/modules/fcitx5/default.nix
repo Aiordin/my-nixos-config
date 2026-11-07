@@ -74,6 +74,46 @@ in
   '';
 
   # ============================================================
+  # Qt SVG 插件路径 —— 让候选窗真正加载 panel.svg / highlight.svg
+  # ============================================================
+  # classicui 用 QImageReader 读主题里的 SVG，而 Qt6 的 SVG 支持是插件
+  # （imageformats/libqsvg.so，来自 qtsvg）。fcitx5 自带的 wrapper 只把
+  # 自己的 plugins 目录 prepend 进 QT_PLUGIN_PATH，而那个目录下只有
+  # plasma/ 和 platforminputcontexts/，没有 imageformats —— 于是 SVG 背景
+  # 加载失败，回退到 theme.conf 里的 [*/Background] Color。
+  #
+  # 这正是「夜间候选窗文字看不见」的成因：回退色原本硬编码为 #ffffff，
+  # 而 classicui 的 NormalColor 取自 on_surface，暗色模式下也是 #ffffff，
+  # 白底白字。浅色模式下 on_surface 是深色，所以只有夜间会暴露。
+  #
+  # 这里把 qtsvg 的插件目录交给 systemd 服务，wrapper 会把 fcitx5 自己的
+  # plugins 目录 prepend 上去，两者共存。
+  systemd.user.services.fcitx5-daemon.Service.Environment = [
+    "QT_PLUGIN_PATH=${pkgs.qt6.qtsvg}/lib/qt-6/plugins"
+  ];
+
+  # ============================================================
+  # 屏蔽 fcitx5 包自带的 XDG autostart
+  # ============================================================
+  # fcitx5 包在 etc/xdg/autostart/ 带了一个 org.fcitx.Fcitx5.desktop，
+  # systemd-xdg-autostart-generator 据此生成
+  # app-org.fcitx.Fcitx5@autostart.service，在图形会话里抢先拉起一个实例。
+  # 那个实例不属于本模块的 fcitx5-daemon.service：
+  #   * 没有下面注入的 QT_PLUGIN_PATH（qtsvg），SVG 背景加载失败；
+  #   * 它占住 D-Bus 名字后，fcitx5-daemon.service 启动会立刻退出
+  #     （日志：Could not load addon dbus），主题从此不再随渲染更新。
+  # 用户级 ~/.config/autostart 的同名文件按 XDG 规范遮蔽后者。
+  xdg.configFile."autostart/org.fcitx.Fcitx5.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Fcitx 5
+    Comment=由 home-manager 的 fcitx5-daemon.service 接管，此处显式禁用
+    Exec=true
+    Hidden=true
+    X-GNOME-Autostart-enabled=false
+  '';
+
+  # ============================================================
   # Noctalia 动态皮肤模板
   # ============================================================
   # 模板放在 templates/ 下（只读链接），Noctalia 读取后按壁纸取色渲染，
